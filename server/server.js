@@ -2,6 +2,7 @@ import express, { json, urlencoded } from 'express';
 import { config } from 'dotenv';
 import cors from 'cors';
 import connectDB from './config/db.js';
+import authRoutes from './routes/authRoutes.js'
 
 config();
 connectDB();
@@ -29,6 +30,9 @@ app.get('/api/health', (req, res) => {
     timestamp: new Date().toISOString()
   });
 });
+
+// Auth route
+app.use('/api/auth', authRoutes);
 
 // 404 handler
 app.use((req, res) => {
