@@ -123,31 +123,32 @@ The application will be available at:
 
 ## 📁 Project Structure
 
+```text
 newsroom-cms/
-├── client/                 # React frontend
-│   ├── public/
-│   └── src/
-│       ├── components/     # Reusable components
-│       │   ├── common/
-│       │   └── layout/
-│       ├── context/        # React Context (Auth, Socket)
-│       ├── pages/          # Page components
-│       │   ├── articles/
-│       │   ├── auth/
-│       │   └── dashboard/
-│       ├── services/       # API services
-│       ├── App.css
-│       ├── App.jsx
-│       ├── index.css
-│       └── main.jsx
-└── server/                 # Express backend
-    ├── config/             # Configuration files
-    ├── controllers/        # Route controllers
-    ├── middleware/         # Custom middleware
-    ├── models/             # Mongoose models
-    ├── routes/             # API routes
-    ├── utils/              # Utility functions
-    └── server.js           # Entry point
+├── client/                     # React frontend
+|   ├── public/
+|   └── src/
+|       ├── components/         # Reusable components
+|       |   ├── common/
+|       |   └── layout/
+|       ├── context/            # React Context (Auth, Socket)
+|       ├── pages/              # Page components
+|       |   ├── articles/
+|       |   ├── auth/
+|       |   └── dashboard/
+|       ├── services/           # API services
+|       ├── App.css
+|       ├── App.jsx
+|       ├── index.css
+|       └── main.jsx
+└── server/                     # Express backend
+    ├── config/                 # Configuration files
+    ├── controllers/            # Route controllers
+    ├── middleware/             # Custom middleware
+    ├── models/                 # Mongoose models
+    ├── routes/                 # API routes
+    ├── utils/                  # Utility functions
+    └── server.js               # Entry point
 
 ##  🔒 API Endpoints
 
