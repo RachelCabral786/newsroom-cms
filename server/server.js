@@ -2,7 +2,9 @@ import express, { json, urlencoded } from 'express';
 import { config } from 'dotenv';
 import cors from 'cors';
 import connectDB from './config/db.js';
-import authRoutes from './routes/authRoutes.js'
+import authRoutes from './routes/authRoutes.js';
+import userRoutes from './routes/userRoutes.js';
+import articleRoutes from './routes/articleRoutes.js';
 
 config();
 connectDB();
@@ -22,7 +24,6 @@ app.get('/', (req, res) => {
   });
 });
 
-// Health check route
 app.get('/api/health', (req, res) => {
   res.json({
     success: true,
@@ -31,8 +32,10 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// Auth route
+// Mount routes
 app.use('/api/auth', authRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/articles', articleRoutes);
 
 // 404 handler
 app.use((req, res) => {
@@ -52,7 +55,6 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Start server
 const PORT = process.env.PORT || 5000;
 
 const server = app.listen(PORT, () => {

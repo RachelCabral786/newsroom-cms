@@ -1,8 +1,7 @@
-import { Schema, model } from 'mongoose';
-import bcrypt from 'bcryptjs'; 
-const { genSalt, hash, compare } = bcrypt;
+import mongoose from 'mongoose';
+import bcrypt from 'bcryptjs';
 
-const userSchema = new Schema(
+const userSchema = new mongoose.Schema(
   {
     name: {
       type: String,
@@ -48,13 +47,13 @@ userSchema.pre('save', async function (next) {
     next();
   }
   
-  const salt = await genSalt(10);
-  this.password = await hash(this.password, salt);
+  const salt = await bcrypt.genSalt(10);
+  this.password = await bcrypt.hash(this.password, salt);
 });
 
 // Compare password method
 userSchema.methods.comparePassword = async function (enteredPassword) {
-  return await compare(enteredPassword, this.password);
+  return await bcrypt.compare(enteredPassword, this.password);
 };
 
 // Remove password from JSON response
@@ -64,4 +63,4 @@ userSchema.methods.toJSON = function () {
   return user;
 };
 
-export default model('User', userSchema);
+export default mongoose.model('User', userSchema);

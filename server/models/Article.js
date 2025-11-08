@@ -1,6 +1,6 @@
-import { Schema, model } from 'mongoose';
+import mongoose from 'mongoose';
 
-const articleSchema = new Schema(
+const articleSchema = new mongoose.Schema(
   {
     title: {
       type: String,
@@ -13,7 +13,7 @@ const articleSchema = new Schema(
       required: [true, 'Please provide content']
     },
     author: {
-      type: Schema.Types.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
       required: true
     },
@@ -23,12 +23,12 @@ const articleSchema = new Schema(
       default: 'draft'
     },
     assignedEditor: {
-      type: Schema.Types.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
       default: null
     },
     approvedBy: {
-      type: Schema.Types.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
       default: null
     },
@@ -55,4 +55,4 @@ articleSchema.index({ title: 'text' });
 articleSchema.index({ author: 1, status: 1 });
 articleSchema.index({ assignedEditor: 1, status: 1 });
 
-export default model('Article', articleSchema);
+export default mongoose.model('Article', articleSchema);
