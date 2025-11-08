@@ -1,18 +1,12 @@
-import { createContext, useContext, useEffect, useState } from "react";
+// src/context/SocketProvider.jsx (or original filename)
+import { useEffect, useState } from "react";
 import { io } from "socket.io-client";
 import { useAuth } from "./AuthContext";
 import { toast } from "react-toastify";
+// Import the context from the new file
+import { SocketContext } from "./useSocket";
 
-const SocketContext = createContext(null);
-
-export const useSocket = () => {
-  const context = useContext(SocketContext);
-  if (!context) {
-    throw new Error("useSocket must be used within a SocketProvider");
-  }
-  return context;
-};
-
+// Only SocketProvider is exported here
 export const SocketProvider = ({ children }) => {
   const [socket, setSocket] = useState(null);
   const [connected, setConnected] = useState(false);
@@ -20,7 +14,6 @@ export const SocketProvider = ({ children }) => {
 
   useEffect(() => {
     if (!user) {
-      // Disconnect socket if user logs out
       if (socket) {
         socket.disconnect();
         setSocket(null);
@@ -29,7 +22,6 @@ export const SocketProvider = ({ children }) => {
       return;
     }
 
-    // Create socket connection
     const SOCKET_URL =
       import.meta.env.VITE_API_URL?.replace("/api", "") ||
       "http://localhost:5000";
@@ -42,7 +34,6 @@ export const SocketProvider = ({ children }) => {
     newSocket.on("connect", () => {
       console.log("✅ Socket connected:", newSocket.id);
       setConnected(true);
-      // Join with user ID
       newSocket.emit("join", user.id);
     });
 
@@ -58,16 +49,15 @@ export const SocketProvider = ({ children }) => {
 
     setSocket(newSocket);
 
-    // Cleanup on unmount
     return () => {
       newSocket.disconnect();
     };
-  }, [user]);
+  }, [user]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Listen for article approval
   useEffect(() => {
+    // ... (rest of your useEffect logic remains here)
     if (!socket || !user) return;
-
+    // ... (logic for handleArticleApproved and handleArticleRejected)
     const handleArticleApproved = (data) => {
       console.log("📢 Article approved:", data);
       toast.success(
@@ -81,7 +71,6 @@ export const SocketProvider = ({ children }) => {
         }
       );
 
-      // Trigger a custom event that components can listen to
       window.dispatchEvent(
         new CustomEvent("articleStatusChanged", { detail: data })
       );
@@ -101,7 +90,6 @@ export const SocketProvider = ({ children }) => {
         }
       );
 
-      // Trigger a custom event that components can listen to
       window.dispatchEvent(
         new CustomEvent("articleStatusChanged", { detail: data })
       );

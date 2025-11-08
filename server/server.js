@@ -7,6 +7,7 @@ import connectDB from './config/db.js';
 import authRoutes from './routes/authRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import articleRoutes from './routes/articleRoutes.js';
+import http from 'http'; 
 
 config();
 connectDB();
@@ -46,6 +47,7 @@ app.get('/', (req, res) => {
   });
 });
 
+// Health check endpoint
 app.get('/api/health', (req, res) => {
   res.json({
     success: true,
@@ -78,7 +80,7 @@ app.use((err, req, res, next) => {
 });
 
 // Socket.io connection handling
-const userSockets = new Map(); 
+const userSockets = new Map();  
 
 io.on('connection', (socket) => {
   console.log('New client connected:', socket.id);
@@ -104,9 +106,34 @@ export { io, userSockets };
 
 const PORT = process.env.PORT || 5000;
 
+/* Keep Alive Function */
+const keepAlive = () => {
+  const KEEPALIVE_URL = process.env.KEEPALIVE_URL;
+  if (KEEPALIVE_URL) {
+    // Ping every 10 minutes
+    setInterval(() => {
+      console.log('--- Pinging server for keep-alive ---');
+      http.get(KEEPALIVE_URL, (res) => {
+        if (res.statusCode === 200) {
+          console.log(`Keep-alive successful: Status ${res.statusCode}`);
+        } else {
+          console.error(`Keep-alive failed: Status ${res.statusCode}`);
+        }
+      }).on('error', (err) => {
+        console.error('Keep-alive error:', err.message);
+      });
+    }, 600000); 
+  } else {
+    console.log('KEEPALIVE_URL not set. Keep-alive function is disabled.');
+  }
+};
+
 httpServer.listen(PORT, () => {
   console.log(`Newsroom CMS Server Started: http://localhost:${PORT}`);
- console.log("Socket.io is ready!");
+  console.log("Socket.io is ready!");
+  
+  // Start the keep-alive function after the server starts listening
+  keepAlive();
 });
 
 export default app;
