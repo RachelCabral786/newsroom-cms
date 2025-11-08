@@ -114,12 +114,12 @@ The application will be available at:
 
 ## 👤 Test Users
 
-| Role   | Email               | Password   |
-|------  |---------------------|------------|
-| Admin  | admin@newsroom.com  | admin@123  |
-| Editor | john@newsroom.com   | editor@123 |
-| Writer | jane@newsroom.com   | writer@123 |
-| Reader | bob@newsroom.com    | reader@123 |
+| Role   | Email               | Password  |
+|--------|---------------------|-----------|
+| Admin  | admin@newsroom.com  | admin123  |
+| Editor | editor@newsroom.com | editor123 |
+| Writer | writer@newsroom.com | writer123 |
+| Reader | reader@newsroom.com | reader123 |
 
 ## 📁 Project Structure
 
