@@ -9,11 +9,23 @@ const WriterDashboard = () => {
   const navigate = useNavigate();
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState("all"); 
+  const [filter, setFilter] = useState("all");
 
   useEffect(() => {
     fetchArticles();
-  }, []); 
+
+    // Listen for article status changes
+    const handleStatusChange = () => {
+      console.log("📢 Article status changed - refreshing...");
+      fetchArticles();
+    };
+
+    window.addEventListener("articleStatusChanged", handleStatusChange);
+
+    return () => {
+      window.removeEventListener("articleStatusChanged", handleStatusChange);
+    };
+  }, []);
 
   const fetchArticles = async () => {
     try {
@@ -50,7 +62,6 @@ const WriterDashboard = () => {
 
   const filteredArticles = getFilteredArticles();
 
-  // Calculate stats from all articles
   const stats = {
     total: articles.length,
     draft: articles.filter((a) => a.status === "draft").length,
@@ -279,7 +290,6 @@ const WriterDashboard = () => {
                         View
                       </button>
                     )}
-
                     {article.status === "submitted" && (
                       <button
                         disabled
@@ -298,5 +308,4 @@ const WriterDashboard = () => {
     </DashboardLayout>
   );
 };
-
 export default WriterDashboard;

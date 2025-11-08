@@ -14,6 +14,14 @@ const sanitizeContent = (content) => {
   });
 };
 
+// Helper to emit socket event
+const emitToUser = (req, userId, event, data) => {
+  const io = req.app.get('io');
+  if (io) {
+    io.emit(`${event}:${userId}`, data);
+  }
+};
+
 // Create new article (draft)
 export const createArticle = async (req, res) => {
   try {
@@ -338,6 +346,14 @@ export const approveArticle = async (req, res) => {
       .populate('assignedEditor', 'name email')
       .populate('approvedBy', 'name email');
 
+    // Emit socket event to author
+    emitToUser(req, article.author.toString(), 'articleApproved', {
+      articleId: article._id,
+      title: article.title,
+      editorName: req.user.name,
+      message: `Your article "${article.title}" has been approved!`
+    });
+
     res.status(200).json({
       success: true,
       message: 'Article approved successfully',
@@ -399,6 +415,15 @@ export const rejectArticle = async (req, res) => {
     const updatedArticle = await Article.findById(article._id)
       .populate('author', 'name email')
       .populate('assignedEditor', 'name email');
+
+    // Emit socket event to author
+    emitToUser(req, article.author.toString(), 'articleRejected', {
+      articleId: article._id,
+      title: article.title,
+      editorName: req.user.name,
+      comment: comment,
+      message: `Your article "${article.title}" needs revisions`
+    });
 
     res.status(200).json({
       success: true,

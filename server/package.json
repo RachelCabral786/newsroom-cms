@@ -8,7 +8,12 @@
     "dev": "nodemon server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": ["newsroom", "cms", "express", "mongodb"],
+  "keywords": [
+    "newsroom",
+    "cms",
+    "express",
+    "mongodb"
+  ],
   "author": "Rachel",
   "license": "MIT",
   "description": "Backend for Newsroom CMS",
