@@ -1,10 +1,15 @@
-import { Router } from 'express';
+import express from 'express';
 import { body } from 'express-validator';
-import { register, login, getMe, updatePassword } from '../controllers/authController.js'
+import {
+  register,
+  login,
+  getMe,
+  updatePassword
+} from '../controllers/authController.js';
 import { protect } from '../middleware/auth.js';
 import { validate } from '../middleware/validate.js';
 
-const router = Router();
+const router = express.Router();
 
 // Validation rules
 const registerValidation = [

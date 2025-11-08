@@ -1,8 +1,8 @@
-import User from '../models/User.js'; // <-- CORRECTED IMPORT
+import User from '../models/User.js';
 import generateToken from '../utils/generateToken.js';
 
 // Register user
-export async function register(req, res) {
+export const register = async (req, res) => {
   try {
     const { name, email, password, role } = req.body;
 
@@ -49,10 +49,10 @@ export async function register(req, res) {
       message: error.message || 'Error registering user'
     });
   }
-}
+};
 
 // Login user
-export async function login(req, res) {
+export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
@@ -88,7 +88,6 @@ export async function login(req, res) {
       });
     }
 
-    // Generate token
     const token = generateToken(user._id);
 
     res.status(200).json({
@@ -111,10 +110,10 @@ export async function login(req, res) {
       message: error.message || 'Error logging in'
     });
   }
-}
+};
 
 // Get current logged in user
-export async function getMe(req, res) {
+export const getMe = async (req, res) => {
   try {
     const user = await User.findById(req.user.id);
 
@@ -137,10 +136,10 @@ export async function getMe(req, res) {
       message: error.message || 'Error fetching user data'
     });
   }
-}
+};
 
-// Update user password
-export async function updatePassword(req, res) {
+// Update user password
+export const updatePassword = async (req, res) => {
   try {
     const { currentPassword, newPassword } = req.body;
 
@@ -152,6 +151,7 @@ export async function updatePassword(req, res) {
     }
 
     const user = await User.findById(req.user.id).select('+password');
+
     const isMatch = await user.comparePassword(currentPassword);
 
     if (!isMatch) {
@@ -164,7 +164,6 @@ export async function updatePassword(req, res) {
     user.password = newPassword;
     await user.save();
 
-    // Generate new token
     const token = generateToken(user._id);
 
     res.status(200).json({
@@ -179,4 +178,4 @@ export async function updatePassword(req, res) {
       message: error.message || 'Error updating password'
     });
   }
-}
+};
