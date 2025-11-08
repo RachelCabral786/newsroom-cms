@@ -25,12 +25,12 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: {
-          'react-quill': ['react-quill']
+          'react-quilljs': ['react-quilljs']
         }
       }
     }
   },
   optimizeDeps: {
-    include: ['react-quill']
+    include: ['react-quilljs']
   }
 })
