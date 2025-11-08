@@ -4,8 +4,10 @@ import DashboardLayout from "../../components/layout/DashboardLayout";
 import userService from "../../services/userService";
 import articleService from "../../services/articleService";
 import LoadingSpinner from "../../components/common/LoadingSpinner";
+import { useAuth } from "../../context/AuthContext";
 
 const AdminDashboard = () => {
+  const { user: currentUser } = useAuth(); // current logged-in user
   const [stats, setStats] = useState({
     users: { total: 0, byRole: {} },
     articles: { total: 0, byStatus: {} },
@@ -45,6 +47,36 @@ const AdminDashboard = () => {
   };
 
   const handleRoleChange = async (userId, newRole) => {
+    // find the user object in the users array (to check current role & id)
+    const targetUser = users.find((u) => u._id === userId);
+    if (!targetUser) {
+      toast.error("User not found");
+      return;
+    }
+
+    // client-side validations (mirror backend)
+    if (!["editor", "writer"].includes(newRole)) {
+      // This also prevents attempting to set to 'reader' or any other invalid role.
+      toast.error(
+        "Role update not allowed — you can only set roles to EDITOR or WRITER."
+      );
+      return;
+    }
+
+    if (targetUser.role === "admin") {
+      toast.error("Cannot change admin role.");
+      return;
+    }
+
+    const isSelf =
+      currentUser &&
+      (currentUser.id === targetUser._id || currentUser._id === targetUser._id);
+
+    if (isSelf) {
+      toast.error("You cannot change your own role.");
+      return;
+    }
+
     try {
       await userService.updateUserRole(userId, newRole);
       toast.success("User role updated successfully");
@@ -315,6 +347,14 @@ const AdminDashboard = () => {
           <div className="bg-white rounded-lg shadow overflow-hidden">
             <div className="px-6 py-4 border-b border-gray-200">
               <h3 className="text-lg font-semibold text-gray-900">All Users</h3>
+              <p className="text-sm text-gray-500 mt-1">
+                Note: You can only promote/demote users between{" "}
+                <strong>EDITOR</strong> and <strong>WRITER</strong>. Admin roles
+                cannot be changed from the dashboard.{" "}
+                <span className="italic">
+                  (READER is shown for info and cannot be selected.)
+                </span>
+              </p>
             </div>
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200">
@@ -356,18 +396,45 @@ const AdminDashboard = () => {
                             {user.role.toUpperCase()}
                           </span>
                         ) : (
-                          <select
-                            value={user.role}
-                            onChange={(e) =>
-                              handleRoleChange(user._id, e.target.value)
-                            }
-                            className="text-xs font-semibold rounded-full px-3 py-1 border-0 focus:ring-2 focus:ring-primary"
-                            disabled={user.role === "admin"}
-                          >
-                            <option value="editor">EDITOR</option>
-                            <option value="writer">WRITER</option>
-                            <option value="reader">READER</option>
-                          </select>
+                          (() => {
+                            const isSelf =
+                              currentUser &&
+                              (currentUser.id === user._id ||
+                                currentUser._id === user._id);
+
+                            // If the user is a reader, show the select as disabled (informational).
+                            const entirelyDisabled =
+                              user.role === "admin" ||
+                              isSelf ||
+                              user.role === "reader";
+
+                            return (
+                              <select
+                                value={user.role}
+                                onChange={(e) =>
+                                  handleRoleChange(user._id, e.target.value)
+                                }
+                                className="text-xs font-semibold rounded-full px-3 py-1 border-0 focus:ring-2 focus:ring-primary"
+                                disabled={entirelyDisabled}
+                                title={
+                                  entirelyDisabled
+                                    ? isSelf
+                                      ? "You cannot change your own role."
+                                      : user.role === "admin"
+                                      ? "Cannot change admin role."
+                                      : "READER role cannot be changed from this dashboard."
+                                    : "Change role"
+                                }
+                              >
+                                {/* READER shown but disabled as informational option */}
+                                <option value="reader" disabled>
+                                  READER
+                                </option>
+                                <option value="editor">EDITOR</option>
+                                <option value="writer">WRITER</option>
+                              </select>
+                            );
+                          })()
                         )}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">

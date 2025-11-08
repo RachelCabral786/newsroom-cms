@@ -8,6 +8,8 @@ import authRoutes from './routes/authRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import articleRoutes from './routes/articleRoutes.js';
 import http from 'http'; 
+import https from 'https';
+import { URL } from 'url';
 
 config();
 connectDB();
@@ -110,10 +112,13 @@ const PORT = process.env.PORT || 5000;
 const keepAlive = () => {
   const KEEPALIVE_URL = process.env.KEEPALIVE_URL;
   if (KEEPALIVE_URL) {
-    // Ping every 10 minutes
+  // Ping every 10 minutes
     setInterval(() => {
       console.log('--- Pinging server for keep-alive ---');
-      http.get(KEEPALIVE_URL, (res) => {
+      const parsedUrl = new URL(KEEPALIVE_URL);
+      const requester = parsedUrl.protocol === 'https:' ? https : http; 
+      
+      requester.get(KEEPALIVE_URL, (res) => { 
         if (res.statusCode === 200) {
           console.log(`Keep-alive successful: Status ${res.statusCode}`);
         } else {
