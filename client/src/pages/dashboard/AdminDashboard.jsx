@@ -7,7 +7,7 @@ import LoadingSpinner from "../../components/common/LoadingSpinner";
 import { useAuth } from "../../context/AuthContext";
 
 const AdminDashboard = () => {
-  const { user: currentUser } = useAuth(); // current logged-in user
+  const { user: currentUser } = useAuth();
   const [stats, setStats] = useState({
     users: { total: 0, byRole: {} },
     articles: { total: 0, byStatus: {} },
@@ -47,16 +47,13 @@ const AdminDashboard = () => {
   };
 
   const handleRoleChange = async (userId, newRole) => {
-    // find the user object in the users array (to check current role & id)
     const targetUser = users.find((u) => u._id === userId);
     if (!targetUser) {
       toast.error("User not found");
       return;
     }
 
-    // client-side validations (mirror backend)
     if (!["editor", "writer"].includes(newRole)) {
-      // This also prevents attempting to set to 'reader' or any other invalid role.
       toast.error(
         "Role update not allowed — you can only set roles to EDITOR or WRITER."
       );
@@ -109,19 +106,19 @@ const AdminDashboard = () => {
   return (
     <DashboardLayout>
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-3xl font-bold text-gray-900 mb-8">
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-8">
           Admin Dashboard
         </h1>
 
         {/* Tabs */}
-        <div className="border-b border-gray-200 mb-6">
+        <div className="border-b border-gray-200 dark:border-dark-border mb-6">
           <nav className="-mb-px flex space-x-8">
             <button
               onClick={() => setActiveTab("overview")}
               className={`py-4 px-1 border-b-2 font-medium text-sm ${
                 activeTab === "overview"
                   ? "border-primary text-primary"
-                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                  : "border-transparent text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-white hover:border-gray-300"
               }`}
             >
               Overview
@@ -131,7 +128,7 @@ const AdminDashboard = () => {
               className={`py-4 px-1 border-b-2 font-medium text-sm ${
                 activeTab === "users"
                   ? "border-primary text-primary"
-                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                  : "border-transparent text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-white hover:border-gray-300"
               }`}
             >
               Users Management
@@ -141,7 +138,7 @@ const AdminDashboard = () => {
               className={`py-4 px-1 border-b-2 font-medium text-sm ${
                 activeTab === "articles"
                   ? "border-primary text-primary"
-                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                  : "border-transparent text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-white hover:border-gray-300"
               }`}
             >
               All Articles
@@ -154,17 +151,17 @@ const AdminDashboard = () => {
           <div>
             {/* Stats Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-              <div className="bg-white rounded-lg shadow p-6">
+              <div className="bg-white dark:bg-dark-card rounded-lg shadow p-6 border border-gray-100 dark:border-dark-border">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-gray-600">
+                    <p className="text-sm font-medium text-gray-600 dark:text-gray-300">
                       Total Users
                     </p>
-                    <p className="text-3xl font-bold text-gray-900 mt-2">
+                    <p className="text-3xl font-bold text-gray-900 dark:text-white mt-2">
                       {stats.users.total}
                     </p>
                   </div>
-                  <div className="p-3 bg-blue-100 rounded-full">
+                  <div className="p-3 bg-blue-100 dark:bg-opacity-10 rounded-full">
                     <svg
                       className="w-8 h-8 text-blue-600"
                       fill="none"
@@ -182,17 +179,17 @@ const AdminDashboard = () => {
                 </div>
               </div>
 
-              <div className="bg-white rounded-lg shadow p-6">
+              <div className="bg-white dark:bg-dark-card rounded-lg shadow p-6 border border-gray-100 dark:border-dark-border">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-gray-600">
+                    <p className="text-sm font-medium text-gray-600 dark:text-gray-300">
                       Total Articles
                     </p>
-                    <p className="text-3xl font-bold text-gray-900 mt-2">
+                    <p className="text-3xl font-bold text-gray-900 dark:text-white mt-2">
                       {stats.articles.total}
                     </p>
                   </div>
-                  <div className="p-3 bg-green-100 rounded-full">
+                  <div className="p-3 bg-green-100 dark:bg-opacity-10 rounded-full">
                     <svg
                       className="w-8 h-8 text-green-600"
                       fill="none"
@@ -210,17 +207,17 @@ const AdminDashboard = () => {
                 </div>
               </div>
 
-              <div className="bg-white rounded-lg shadow p-6">
+              <div className="bg-white dark:bg-dark-card rounded-lg shadow p-6 border border-gray-100 dark:border-dark-border">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-gray-600">
+                    <p className="text-sm font-medium text-gray-600 dark:text-gray-300">
                       Approved
                     </p>
-                    <p className="text-3xl font-bold text-gray-900 mt-2">
+                    <p className="text-3xl font-bold text-gray-900 dark:text-white mt-2">
                       {stats.articles.byStatus?.approved || 0}
                     </p>
                   </div>
-                  <div className="p-3 bg-green-100 rounded-full">
+                  <div className="p-3 bg-green-100 dark:bg-opacity-10 rounded-full">
                     <svg
                       className="w-8 h-8 text-green-600"
                       fill="none"
@@ -238,17 +235,17 @@ const AdminDashboard = () => {
                 </div>
               </div>
 
-              <div className="bg-white rounded-lg shadow p-6">
+              <div className="bg-white dark:bg-dark-card rounded-lg shadow p-6 border border-gray-100 dark:border-dark-border">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-gray-600">
+                    <p className="text-sm font-medium text-gray-600 dark:text-gray-300">
                       Pending Review
                     </p>
-                    <p className="text-3xl font-bold text-gray-900 mt-2">
+                    <p className="text-3xl font-bold text-gray-900 dark:text-white mt-2">
                       {stats.articles.byStatus?.submitted || 0}
                     </p>
                   </div>
-                  <div className="p-3 bg-yellow-100 rounded-full">
+                  <div className="p-3 bg-yellow-100 dark:bg-opacity-10 rounded-full">
                     <svg
                       className="w-8 h-8 text-yellow-600"
                       fill="none"
@@ -267,10 +264,10 @@ const AdminDashboard = () => {
               </div>
             </div>
 
-            {/* Role Distribution */}
+            {/* Role Distribution & Articles by Status */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <div className="bg-white rounded-lg shadow p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              <div className="bg-white dark:bg-dark-card rounded-lg shadow p-6 border border-gray-100 dark:border-dark-border">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
                   Users by Role
                 </h3>
                 <div className="space-y-4">
@@ -284,18 +281,18 @@ const AdminDashboard = () => {
                           <span
                             className={`px-3 py-1 text-sm font-semibold rounded-full ${
                               role === "admin"
-                                ? "bg-purple-100 text-purple-800"
+                                ? "bg-purple-100 text-purple-500 dark:bg-opacity-10"
                                 : role === "editor"
-                                ? "bg-blue-100 text-blue-800"
+                                ? "bg-blue-100 text-blue-500 dark:bg-opacity-10"
                                 : role === "writer"
-                                ? "bg-green-100 text-green-800"
-                                : "bg-gray-100 text-gray-800"
+                                ? "bg-green-100 text-green-500 dark:bg-opacity-10"
+                                : "bg-gray-100 text-gray-500 dark:bg-opacity-10"
                             }`}
                           >
                             {role.toUpperCase()}
                           </span>
                         </div>
-                        <span className="text-2xl font-bold text-gray-900">
+                        <span className="text-2xl font-bold text-gray-900 dark:text-white">
                           {count}
                         </span>
                       </div>
@@ -304,8 +301,8 @@ const AdminDashboard = () => {
                 </div>
               </div>
 
-              <div className="bg-white rounded-lg shadow p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              <div className="bg-white dark:bg-dark-card rounded-lg shadow p-6 border border-gray-100 dark:border-dark-border">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
                   Articles by Status
                 </h3>
                 <div className="space-y-4">
@@ -319,18 +316,18 @@ const AdminDashboard = () => {
                           <span
                             className={`px-3 py-1 text-sm font-semibold rounded-full ${
                               status === "approved"
-                                ? "bg-green-100 text-green-800"
+                                ? "bg-green-100 text-green-500 dark:bg-opacity-10"
                                 : status === "submitted"
-                                ? "bg-yellow-100 text-yellow-800"
+                                ? "bg-yellow-100 text-yellow-500 dark:bg-opacity-10"
                                 : status === "rejected"
-                                ? "bg-red-100 text-red-800"
-                                : "bg-gray-100 text-gray-800"
+                                ? "bg-red-100 text-red-500 dark:bg-opacity-10"
+                                : "bg-gray-100 text-gray-500 dark:bg-opacity-10"
                             }`}
                           >
                             {status.toUpperCase()}
                           </span>
                         </div>
-                        <span className="text-2xl font-bold text-gray-900">
+                        <span className="text-2xl font-bold text-gray-900 dark:text-white">
                           {count}
                         </span>
                       </div>
@@ -344,10 +341,12 @@ const AdminDashboard = () => {
 
         {/* Users Management Tab */}
         {activeTab === "users" && (
-          <div className="bg-white rounded-lg shadow overflow-hidden">
-            <div className="px-6 py-4 border-b border-gray-200">
-              <h3 className="text-lg font-semibold text-gray-900">All Users</h3>
-              <p className="text-sm text-gray-500 mt-1">
+          <div className="bg-white dark:bg-dark-card rounded-lg shadow overflow-hidden border border-gray-100 dark:border-dark-border">
+            <div className="px-6 py-4 border-b border-gray-200 dark:border-dark-border">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                All Users
+              </h3>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                 Note: You can only promote/demote users between{" "}
                 <strong>EDITOR</strong> and <strong>WRITER</strong>. Admin roles
                 cannot be changed from the dashboard.{" "}
@@ -357,42 +356,46 @@ const AdminDashboard = () => {
               </p>
             </div>
             <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
+              <table className="min-w-full divide-y divide-gray-200 dark:divide-dark-border">
+                <thead className="bg-gray-50 dark:bg-dark-card">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                       User
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                       Role
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                       Status
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                       Joined
                     </th>
-                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                       Actions
                     </th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+                <tbody className="bg-white dark:bg-dark-card divide-y divide-gray-200 dark:divide-dark-border">
                   {users.map((user) => (
-                    <tr key={user._id} className="hover:bg-gray-50">
+                    <tr
+                      key={user._id}
+                      className="hover:bg-gray-50 dark:hover:bg-dark-bg"
+                    >
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div>
-                          <div className="text-sm font-medium text-gray-900">
+                          <div className="text-sm font-medium text-gray-900 dark:text-white">
                             {user.name}
                           </div>
-                          <div className="text-sm text-gray-500">
+                          <div className="text-sm text-gray-500 dark:text-gray-400">
                             {user.email}
                           </div>
                         </div>
                       </td>
+
                       <td className="px-6 py-4 whitespace-nowrap">
                         {user.role === "admin" ? (
-                          <span className="px-3 py-1 text-xs font-semibold rounded-full bg-purple-100 text-purple-800">
+                          <span className="px-3 py-1 text-xs font-semibold rounded-full bg-purple-100 text-purple-500 dark:bg-opacity-10">
                             {user.role.toUpperCase()}
                           </span>
                         ) : (
@@ -402,7 +405,6 @@ const AdminDashboard = () => {
                               (currentUser.id === user._id ||
                                 currentUser._id === user._id);
 
-                            // If the user is a reader, show the select as disabled (informational).
                             const entirelyDisabled =
                               user.role === "admin" ||
                               isSelf ||
@@ -414,7 +416,7 @@ const AdminDashboard = () => {
                                 onChange={(e) =>
                                   handleRoleChange(user._id, e.target.value)
                                 }
-                                className="text-xs font-semibold rounded-full px-3 py-1 border-0 focus:ring-2 focus:ring-primary"
+                                className="text-xs font-semibold rounded-full px-3 py-1 border-0 focus:ring-2 focus:ring-primary bg-transparent dark:text-white"
                                 disabled={entirelyDisabled}
                                 title={
                                   entirelyDisabled
@@ -426,7 +428,6 @@ const AdminDashboard = () => {
                                     : "Change role"
                                 }
                               >
-                                {/* READER shown but disabled as informational option */}
                                 <option value="reader" disabled>
                                   READER
                                 </option>
@@ -437,28 +438,31 @@ const AdminDashboard = () => {
                           })()
                         )}
                       </td>
+
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span
                           className={`px-3 py-1 text-xs font-semibold rounded-full ${
                             user.isActive
-                              ? "bg-green-100 text-green-800"
-                              : "bg-red-100 text-red-800"
+                              ? "bg-green-100 text-green-500 dark:bg-opacity-10"
+                              : "bg-red-100 text-red-500 dark:bg-opacity-10"
                           }`}
                         >
                           {user.isActive ? "ACTIVE" : "INACTIVE"}
                         </span>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                         {new Date(user.createdAt).toLocaleDateString()}
                       </td>
+
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         {user.role !== "admin" && (
                           <button
                             onClick={() => handleToggleStatus(user._id)}
                             className={`px-3 py-1 rounded-md text-xs font-medium ${
                               user.isActive
-                                ? "bg-red-100 text-red-700 hover:bg-red-200"
-                                : "bg-green-100 text-green-700 hover:bg-green-200"
+                                ? "bg-red-100 text-red-700 hover:bg-red-200 dark:bg-opacity-10"
+                                : "bg-green-100 text-green-700 hover:bg-green-200 dark:bg-opacity-10"
                             }`}
                           >
                             {user.isActive ? "Deactivate" : "Activate"}
@@ -475,26 +479,31 @@ const AdminDashboard = () => {
 
         {/* All Articles Tab */}
         {activeTab === "articles" && (
-          <div className="bg-white rounded-lg shadow overflow-hidden">
-            <div className="px-6 py-4 border-b border-gray-200">
-              <h3 className="text-lg font-semibold text-gray-900">
+          <div className="bg-white dark:bg-dark-card rounded-lg shadow overflow-hidden border border-gray-100 dark:border-dark-border">
+            <div className="px-6 py-4 border-b border-gray-200 dark:border-dark-border">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                 Approved Articles
               </h3>
             </div>
-            <div className="divide-y divide-gray-200">
+            <div className="divide-y divide-gray-200 dark:divide-dark-border">
               {articles.length === 0 ? (
                 <div className="px-6 py-12 text-center">
-                  <p className="text-gray-500">No approved articles yet</p>
+                  <p className="text-gray-500 dark:text-gray-400">
+                    No approved articles yet
+                  </p>
                 </div>
               ) : (
                 articles.map((article) => (
-                  <div key={article._id} className="px-6 py-4 hover:bg-gray-50">
+                  <div
+                    key={article._id}
+                    className="px-6 py-4 hover:bg-gray-50 dark:hover:bg-dark-bg"
+                  >
                     <div className="flex justify-between items-start">
                       <div className="flex-1">
-                        <h4 className="text-lg font-semibold text-gray-900 mb-2">
+                        <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
                           {article.title}
                         </h4>
-                        <div className="flex items-center space-x-4 text-sm text-gray-500">
+                        <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
                           <span className="flex items-center">
                             <svg
                               className="w-4 h-4 mr-1"
@@ -527,12 +536,12 @@ const AdminDashboard = () => {
                             </svg>
                             Approved by {article.approvedBy?.name}
                           </span>
-                          <span>
+                          <span className="dark:text-gray-400">
                             {new Date(article.createdAt).toLocaleDateString()}
                           </span>
                         </div>
                       </div>
-                      <span className="px-3 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
+                      <span className="px-3 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-500 dark:bg-opacity-10">
                         APPROVED
                       </span>
                     </div>

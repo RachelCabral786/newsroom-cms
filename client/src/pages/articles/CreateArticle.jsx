@@ -54,16 +54,16 @@ const CreateArticle = () => {
     <DashboardLayout>
       <div className="max-w-4xl mx-auto">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
             Create New Article
           </h1>
-          <p className="mt-2 text-gray-600">
+          <p className="mt-2 text-gray-600 dark:text-gray-400">
             Write your article and save it as a draft, or submit it directly to
             an editor for review.
           </p>
         </div>
 
-        <div className="bg-white rounded-lg shadow-lg p-6">
+        <div className="bg-white dark:bg-dark-card rounded-lg shadow-lg p-6 border border-gray-200 dark:border-dark-border">
           <ArticleForm
             onSubmit={handleSubmit}
             onCancel={handleCancel}
