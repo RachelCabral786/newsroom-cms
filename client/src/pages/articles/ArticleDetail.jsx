@@ -244,47 +244,6 @@ const ArticleDetail = () => {
             dangerouslySetInnerHTML={{ __html: article.content }}
           />
         </div>
-
-        {/* Actions */}
-        {user?.role === "writer" && article.author._id === user.id && (
-          <div className="bg-gray-50 rounded-lg p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">
-              Actions
-            </h3>
-            <div className="flex space-x-3">
-              {["draft", "rejected"].includes(article.status) && (
-                <button
-                  onClick={() => navigate(`/articles/edit/${article._id}`)}
-                  className="px-4 py-2 bg-primary text-white font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
-                >
-                  Edit Article
-                </button>
-              )}
-              {article.status === "draft" && (
-                <button
-                  onClick={async () => {
-                    if (
-                      window.confirm(
-                        "Are you sure you want to delete this article?"
-                      )
-                    ) {
-                      try {
-                        await articleService.deleteArticle(article._id);
-                        toast.success("Article deleted successfully");
-                        navigate("/dashboard");
-                      } catch (error) {
-                        toast.error("Failed to delete article");
-                      }
-                    }
-                  }}
-                  className="px-4 py-2 bg-red-600 text-white font-medium rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-                >
-                  Delete Article
-                </button>
-              )}
-            </div>
-          </div>
-        )}
       </div>
     </DashboardLayout>
   );

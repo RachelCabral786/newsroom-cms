@@ -1,41 +1,65 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import DashboardLayout from "../../components/layout/DashboardLayout";
 import articleService from "../../services/articleService";
 import LoadingSpinner from "../../components/common/LoadingSpinner";
 
 const EditorDashboard = () => {
+  const navigate = useNavigate();
   const [articles, setArticles] = useState([]);
+  const [allArticles, setAllArticles] = useState([]); // State for all articles for stats
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState("submitted"); // submitted, approved, rejected
+  const [filter, setFilter] = useState("submitted");
   const [selectedArticle, setSelectedArticle] = useState(null);
   const [rejectionComment, setRejectionComment] = useState("");
   const [showRejectModal, setShowRejectModal] = useState(false);
 
-  useEffect(() => {
-    // Fetch all articles relevant to the editor on mount
-    fetchArticles();
-  }, []);
+  // Function to fetch articles based on status
+  const fetchArticles = useCallback(
+    async (status = filter) => {
+      try {
+        setLoading(true);
+        // Fetch articles based on the filter for the main list
+        const response = await articleService.getArticles({ status: status });
+        setArticles(response.data.articles);
 
-  const fetchArticles = async () => {
-    try {
-      setLoading(true);
-      const response = await articleService.getArticles({});
-      setArticles(response.data.articles);
-    } catch (error) {
-      toast.error("Failed to load articles");
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
+        if (status === filter) {
+          const allResponse = await articleService.getArticles({}); // Fetch all statuses for stats
+          setAllArticles(allResponse.data.articles);
+        }
+      } catch (error) {
+        toast.error("Failed to load articles");
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [filter]
+  ); // Include filter in useCallback dependencies
+
+  useEffect(() => {
+    fetchArticles();
+
+    // Listen for article status changes to refresh editor view
+    const handleStatusChange = () => {
+      console.log("📢 Refreshing editor dashboard...");
+      fetchArticles(); // Refetch with the current filter
+    };
+
+    window.addEventListener("articleStatusChanged", handleStatusChange);
+
+    return () => {
+      window.removeEventListener("articleStatusChanged", handleStatusChange);
+    };
+  }, [filter, fetchArticles]); // Added fetchArticles to dependencies
 
   const handleApprove = async (articleId) => {
     try {
       await articleService.approveArticle(articleId);
       toast.success("Article approved successfully!");
-      // Refetch all articles to update the counts in the stats cards
-      fetchArticles();
+      // Dispatch custom event to trigger refresh in useEffect
+      window.dispatchEvent(new Event("articleStatusChanged"));
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to approve article");
     }
@@ -59,22 +83,25 @@ const EditorDashboard = () => {
       setShowRejectModal(false);
       setSelectedArticle(null);
       setRejectionComment("");
-      // Refetch all articles to update the counts in the stats cards
-      fetchArticles();
+      // Dispatch custom event to trigger refresh in useEffect
+      window.dispatchEvent(new Event("articleStatusChanged"));
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to reject article");
     }
   };
 
-  // Calculate stats from all fetched articles
-  const stats = {
-    pending: articles.filter((a) => a.status === "submitted").length,
-    approved: articles.filter((a) => a.status === "approved").length,
-    rejected: articles.filter((a) => a.status === "rejected").length,
+  const handleViewArticle = (articleId) => {
+    navigate(`/articles/${articleId}`);
+    console.log(`Viewing article with ID: ${articleId}`);
+    // toast.info(`Simulating view for article ID: ${articleId}`);
   };
 
-  // Filter articles based on the current filter state for the display list
-  const filteredArticles = articles.filter((a) => a.status === filter);
+  // Calculate stats based on ALL articles fetched for the dashboard
+  const stats = {
+    pending: allArticles.filter((a) => a.status === "submitted").length,
+    approved: allArticles.filter((a) => a.status === "approved").length,
+    rejected: allArticles.filter((a) => a.status === "rejected").length,
+  };
 
   if (loading) {
     return (
@@ -93,7 +120,7 @@ const EditorDashboard = () => {
           Editor Dashboard
         </h1>
 
-        {/* Stats  */}
+        {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <div className="bg-white rounded-lg shadow p-6">
             <div className="flex items-center justify-between">
@@ -216,7 +243,7 @@ const EditorDashboard = () => {
 
         {/* Articles List */}
         <div className="bg-white rounded-lg shadow overflow-hidden">
-          {filteredArticles.length === 0 ? (
+          {articles.length === 0 ? (
             <div className="px-6 py-12 text-center">
               <svg
                 className="mx-auto h-12 w-12 text-gray-400"
@@ -235,112 +262,138 @@ const EditorDashboard = () => {
             </div>
           ) : (
             <div className="divide-y divide-gray-200">
-              {filteredArticles.map(
-                (
-                  article // <-- Use filteredArticles here
-                ) => (
-                  <div key={article._id} className="px-6 py-4 hover:bg-gray-50">
-                    <div className="flex justify-between items-start">
-                      <div className="flex-1">
-                        <div className="flex items-center space-x-3 mb-2">
-                          <h3 className="text-lg font-semibold text-gray-900">
-                            {article.title}
-                          </h3>
-                          <span
-                            className={`px-3 py-1 text-xs font-semibold rounded-full ${
-                              article.status === "submitted"
-                                ? "bg-yellow-100 text-yellow-800"
-                                : article.status === "approved"
-                                ? "bg-green-100 text-green-800"
-                                : "bg-red-100 text-red-800"
-                            }`}
-                          >
-                            {article.status.toUpperCase()}
-                          </span>
-                        </div>
-
-                        <div className="text-sm text-gray-600 mb-3">
-                          <p className="text-sm text-gray-500">
-                            By: {article.author?.name || "N/A"}
-                          </p>
-                          <div
-                            dangerouslySetInnerHTML={{
-                              __html:
-                                article.content.substring(0, 150) +
-                                (article.content.length > 150 ? "..." : ""),
-                            }}
-                          />
-                        </div>
+              {articles.map((article) => (
+                <div key={article._id} className="px-6 py-4 hover:bg-gray-50">
+                  <div className="flex justify-between items-start">
+                    <div className="flex-1">
+                      <div className="flex items-center space-x-3 mb-2">
+                        <h3 className="text-lg font-semibold text-gray-900">
+                          {article.title}
+                        </h3>
+                        <span
+                          className={`px-3 py-1 text-xs font-semibold rounded-full ${
+                            article.status === "submitted"
+                              ? "bg-yellow-100 text-yellow-800"
+                              : article.status === "approved"
+                              ? "bg-green-100 text-green-800"
+                              : "bg-red-100 text-red-800"
+                          }`}
+                        >
+                          {article.status.toUpperCase()}
+                        </span>
                       </div>
 
-                      {/* Action Buttons */}
-                      <div className="flex flex-col space-y-2 ml-4">
-                        {article.status === "submitted" && (
-                          <>
-                            <button
-                              onClick={() => handleApprove(article._id)}
-                              className="px-3 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-700 w-full whitespace-nowrap"
-                            >
-                              Approve
-                            </button>
-                            <button
-                              onClick={() => handleRejectClick(article)}
-                              className="px-3 py-2 bg-red-600 text-white text-sm font-medium rounded-md hover:bg-red-700 w-full whitespace-nowrap"
-                            >
-                              Reject
-                            </button>
-                          </>
+                      <div className="text-sm text-gray-600 mb-3">
+                        <div
+                          dangerouslySetInnerHTML={{
+                            __html: article.content.substring(0, 200) + "...",
+                          }}
+                        />
+                      </div>
+
+                      <div className="flex items-center space-x-4 text-sm text-gray-500">
+                        <span className="flex items-center">
+                          <svg
+                            className="w-4 h-4 mr-1"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                            />
+                          </svg>
+                          By {article.author?.name}
+                        </span>
+                        <span>
+                          {new Date(
+                            article.submittedAt || article.createdAt
+                          ).toLocaleDateString()}
+                        </span>
+                      </div>
+
+                      {article.status === "rejected" &&
+                        article.rejectionComment && (
+                          <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded-md">
+                            <p className="text-sm text-red-800">
+                              <strong>Rejection reason:</strong>{" "}
+                              {article.rejectionComment}
+                            </p>
+                          </div>
                         )}
-                        {(article.status === "approved" ||
-                          article.status === "rejected") && (
+                    </div>
+
+                    <div className="ml-4 flex flex-col space-y-2">
+                      <button
+                        onClick={() => handleViewArticle(article._id)}
+                        className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                      >
+                        View
+                      </button>
+                      {article.status === "submitted" && (
+                        <>
                           <button
-                            disabled
-                            className="px-3 py-2 bg-gray-200 text-gray-500 text-sm font-medium rounded-md cursor-not-allowed whitespace-nowrap"
+                            onClick={() => handleApprove(article._id)}
+                            className="px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
                           >
-                            {article.status === "approved"
-                              ? "Approved"
-                              : "Rejected"}
+                            Approve
                           </button>
-                        )}
-                      </div>
+                          <button
+                            onClick={() => handleRejectClick(article)}
+                            className="px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                          >
+                            Reject
+                          </button>
+                        </>
+                      )}
                     </div>
                   </div>
-                )
-              )}
+                </div>
+              ))}
             </div>
           )}
         </div>
 
         {/* Reject Modal */}
         {showRejectModal && (
-          <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center z-50">
-            <div className="relative bg-white p-8 rounded-lg shadow-xl w-full max-w-md">
-              <h3 className="text-xl font-bold mb-4">
-                Reject Article: {selectedArticle?.title}
-              </h3>
-              <textarea
-                rows="4"
-                value={rejectionComment}
-                onChange={(e) => setRejectionComment(e.target.value)}
-                placeholder="Enter rejection reason..."
-                className="w-full p-3 border border-gray-300 rounded-md focus:ring-red-500 focus:border-red-500"
-              />
-              <div className="flex justify-end space-x-3 mt-6">
-                <button
-                  type="button"
-                  onClick={() => setShowRejectModal(false)}
-                  className="px-4 py-2 border border-gray-300 text-gray-700 font-medium rounded-md hover:bg-gray-50"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="button"
-                  onClick={handleReject}
-                  className="px-4 py-2 bg-red-600 text-white font-medium rounded-md hover:bg-red-700 disabled:opacity-50"
-                  disabled={!rejectionComment.trim()}
-                >
-                  Confirm Rejection
-                </button>
+          <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center">
+            <div className="relative p-5 border w-96 shadow-lg rounded-md bg-white">
+              <div className="mt-3">
+                <h3 className="text-lg font-medium text-gray-900 mb-4">
+                  Reject Article
+                </h3>
+                <p className="text-sm text-gray-500 mb-4">
+                  Please provide a reason for rejecting this article. The writer
+                  will see this comment.
+                </p>
+                <textarea
+                  value={rejectionComment}
+                  onChange={(e) => setRejectionComment(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-primary focus:border-primary"
+                  rows="4"
+                  placeholder="Enter rejection reason..."
+                />
+                <div className="flex justify-end space-x-3 mt-4">
+                  <button
+                    onClick={() => {
+                      setShowRejectModal(false);
+                      setSelectedArticle(null);
+                      setRejectionComment("");
+                    }}
+                    className="px-4 py-2 bg-gray-200 text-gray-800 text-sm font-medium rounded-md hover:bg-gray-300"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleReject}
+                    className="px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-md hover:bg-red-700"
+                  >
+                    Reject Article
+                  </button>
+                </div>
               </div>
             </div>
           </div>
