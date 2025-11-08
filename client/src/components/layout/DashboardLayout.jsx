@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import Navbar from "./Navbar";
@@ -5,6 +6,7 @@ import Navbar from "./Navbar";
 const DashboardLayout = ({ children }) => {
   const { user } = useAuth();
   const location = useLocation();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const navigation = [
     {
@@ -60,13 +62,31 @@ const DashboardLayout = ({ children }) => {
       <Navbar />
 
       <div className="flex">
+        {/* Mobile sidebar backdrop */}
+        {sidebarOpen && (
+          <div
+            className="fixed inset-0 z-20 bg-gray-600 bg-opacity-75 lg:hidden"
+            onClick={() => setSidebarOpen(false)}
+          ></div>
+        )}
+
         {/* Sidebar */}
-        <aside className="w-64 bg-white border-r border-gray-200 min-h-[calc(100vh-4rem)] sticky top-16">
+        <aside
+          className={`
+            fixed lg:static inset-y-0 left-0 z-30
+            w-64 bg-white border-r border-gray-200
+            transform transition-transform duration-300 ease-in-out
+            lg:translate-x-0
+            ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
+            mt-16 lg:mt-0
+          `}
+        >
           <nav className="px-4 py-6 space-y-1">
             {filteredNavigation.map((item) => (
               <Link
                 key={item.name}
                 to={item.href}
+                onClick={() => setSidebarOpen(false)}
                 className={`flex items-center px-4 py-3 text-sm font-medium rounded-md transition-colors ${
                   isActive(item.href)
                     ? "bg-primary text-white"
@@ -80,11 +100,41 @@ const DashboardLayout = ({ children }) => {
           </nav>
         </aside>
 
+        {/* Mobile menu button */}
+        <button
+          onClick={() => setSidebarOpen(!sidebarOpen)}
+          className="fixed bottom-4 right-4 z-40 lg:hidden p-3 bg-primary text-white rounded-full shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+        >
+          <svg
+            className="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            {sidebarOpen ? (
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
+            ) : (
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M4 6h16M4 12h16M4 18h16"
+              />
+            )}
+          </svg>
+        </button>
+
         {/* Main Content */}
-        <main className="flex-1 p-8">{children}</main>
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 w-full lg:w-auto">
+          {children}
+        </main>
       </div>
     </div>
   );
 };
-
 export default DashboardLayout;
