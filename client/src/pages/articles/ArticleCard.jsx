@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { useTheme } from "../../context/ThemeContext";
 
 const ArticleCard = ({
   article,
@@ -8,19 +9,38 @@ const ArticleCard = ({
   onSubmit,
 }) => {
   const navigate = useNavigate();
+  const { theme } = useTheme();
 
   const getStatusBadge = (status) => {
     const badges = {
-      draft: "bg-gray-100 text-gray-800",
-      submitted: "bg-yellow-100 text-yellow-800",
-      approved: "bg-green-100 text-green-800",
-      rejected: "bg-red-100 text-red-800",
+      draft:
+        theme === "dark"
+          ? "bg-gray-800 text-gray-200"
+          : "bg-gray-100 text-gray-500",
+      submitted:
+        theme === "dark"
+          ? "bg-yellow-900 text-yellow-200"
+          : "bg-yellow-100 text-yellow-500",
+      approved:
+        theme === "dark"
+          ? "bg-green-900 text-green-200"
+          : "bg-green-100 text-green-500",
+      rejected:
+        theme === "dark"
+          ? "bg-red-900 text-red-200"
+          : "bg-red-100 text-red-500",
     };
     return badges[status] || badges.draft;
   };
 
   return (
-    <div className="bg-white rounded-lg shadow hover:shadow-lg transition-shadow overflow-hidden">
+    <div
+      className={`rounded-lg shadow hover:shadow-lg transition-shadow overflow-hidden ${
+        theme === "dark"
+          ? "bg-dark-card border-dark-border"
+          : "bg-white border border-gray-200"
+      }`}
+    >
       <div className="p-6">
         <div className="flex items-center justify-between mb-3">
           <span
@@ -30,23 +50,45 @@ const ArticleCard = ({
           >
             {article.status.toUpperCase()}
           </span>
-          <span className="text-xs text-gray-500">
+          <span
+            className={
+              theme === "dark"
+                ? "text-gray-400 text-xs"
+                : "text-gray-500 text-xs"
+            }
+          >
             {new Date(article.createdAt).toLocaleDateString()}
           </span>
         </div>
 
         <h3
-          className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2 cursor-pointer hover:text-primary"
+          className={
+            theme === "dark"
+              ? "text-lg font-semibold text-white mb-2 line-clamp-2 cursor-pointer hover:text-primary"
+              : "text-lg font-semibold text-gray-900 mb-2 line-clamp-2 cursor-pointer hover:text-primary"
+          }
           onClick={() => navigate(`/articles/${article._id}`)}
         >
           {article.title}
         </h3>
 
-        <div className="text-sm text-gray-600 mb-4 line-clamp-3">
+        <div
+          className={
+            theme === "dark"
+              ? "text-sm text-gray-300 mb-4 line-clamp-3"
+              : "text-sm text-gray-600 mb-4 line-clamp-3"
+          }
+        >
           <div dangerouslySetInnerHTML={{ __html: article.content }} />
         </div>
 
-        <div className="flex items-center text-sm text-gray-500 mb-4">
+        <div
+          className={
+            theme === "dark"
+              ? "flex items-center text-sm text-gray-400 mb-4"
+              : "flex items-center text-sm text-gray-500 mb-4"
+          }
+        >
           <svg
             className="w-4 h-4 mr-1"
             fill="none"
@@ -64,15 +106,27 @@ const ArticleCard = ({
         </div>
 
         {article.rejectionComment && (
-          <div className="mb-3 p-3 bg-red-50 border border-red-200 rounded-md">
-            <p className="text-xs text-red-800 line-clamp-2">
+          <div
+            className={
+              theme === "dark"
+                ? "mb-3 p-3 bg-red-900 bg-opacity-20 border border-red-500 rounded-md"
+                : "mb-3 p-3 bg-red-50 border border-red-200 rounded-md"
+            }
+          >
+            <p
+              className={
+                theme === "dark"
+                  ? "text-xs text-red-300 line-clamp-2"
+                  : "text-xs text-red-500 line-clamp-2"
+              }
+            >
               <strong>Rejected:</strong> {article.rejectionComment}
             </p>
           </div>
         )}
 
         {showActions && (
-          <div className="flex space-x-2 pt-4 border-t border-gray-200">
+          <div className="flex space-x-2 pt-4 border-t border-gray-200 dark:border-dark-border">
             {(article.status === "draft" || article.status === "rejected") &&
               onEdit && (
                 <button
@@ -101,7 +155,11 @@ const ArticleCard = ({
             {article.status === "approved" && (
               <button
                 onClick={() => navigate(`/articles/${article._id}`)}
-                className="flex-1 px-3 py-2 bg-gray-200 text-gray-800 text-sm font-medium rounded-md hover:bg-gray-300"
+                className={
+                  theme === "dark"
+                    ? "flex-1 px-3 py-2 bg-dark-bg text-gray-300 text-sm font-medium rounded-md hover:bg-gray-700"
+                    : "flex-1 px-3 py-2 bg-gray-200 text-gray-500 text-sm font-medium rounded-md hover:bg-gray-300"
+                }
               >
                 View
               </button>

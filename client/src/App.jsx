@@ -3,8 +3,10 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { AuthProvider } from "./context/AuthContext";
 import { SocketProvider } from "./context/SocketContext";
+// import { ThemeProvider } from "./context/ThemeContext"; // ThemeProvider is moved to index.jsx
 import ProtectedRoute from "./components/common/ProtectedRoute";
 import ErrorBoundary from "./components/common/ErrorBoundary";
+import { useTheme } from "./context/ThemeContext";
 
 // Auth Pages
 import Login from "./pages/auth/Login";
@@ -20,12 +22,13 @@ import EditArticle from "./pages/articles/EditArticle";
 import ArticleDetail from "./pages/articles/ArticleDetail";
 
 function App() {
+  const { theme } = useTheme(); 
   return (
     <ErrorBoundary>
       <BrowserRouter>
         <AuthProvider>
           <SocketProvider>
-            <div className="min-h-screen bg-gray-50">
+            <div className="min-h-screen bg-gray-50 dark:bg-dark-bg transition-colors duration-200">
               <Routes>
                 {/* Public Routes */}
                 <Route path="/login" element={<Login />} />
@@ -68,7 +71,6 @@ function App() {
                   }
                 />
 
-                {/* Redirect root to dashboard if authenticated, else login */}
                 <Route
                   path="/"
                   element={<Navigate to="/dashboard" replace />}
@@ -78,12 +80,14 @@ function App() {
                 <Route
                   path="*"
                   element={
-                    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+                    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-dark-bg">
                       <div className="text-center">
-                        <h1 className="text-6xl font-bold text-gray-900 mb-4">
+                        <h1 className="text-6xl font-bold text-gray-900 dark:text-white mb-4">
                           404
                         </h1>
-                        <p className="text-gray-600 mb-6">Page not found</p>
+                        <p className="text-gray-600 dark:text-gray-400 mb-6">
+                          Page not found
+                        </p>
                         <a
                           href="/dashboard"
                           className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-blue-700"
@@ -106,7 +110,7 @@ function App() {
               pauseOnFocusLoss
               draggable
               pauseOnHover
-              theme="light"
+              theme={theme}
             />
           </SocketProvider>
         </AuthProvider>

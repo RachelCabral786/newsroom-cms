@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import Navbar from "./Navbar";
+import ThemeToggle from "../../components/common/ThemeToggle";
 
 const DashboardLayout = ({ children }) => {
   const { user } = useAuth();
@@ -54,32 +55,36 @@ const DashboardLayout = ({ children }) => {
   const filteredNavigation = navigation.filter((item) =>
     item.roles.includes(user?.role)
   );
-
   const isActive = (path) => location.pathname === path;
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Navbar />
+    <div className="min-h-screen bg-gray-50 dark:bg-dark-bg transition-colors duration-200">
+      {/* top navbar */}
+      <div className="fixed top-0 left-0 right-0 z-40">
+        <Navbar />
+      </div>
 
-      <div className="flex">
+      <div className="flex pt-16">
+        {" "}
+        {/* account for fixed Navbar height */}
         {/* Mobile sidebar backdrop */}
         {sidebarOpen && (
           <div
-            className="fixed inset-0 z-20 bg-gray-600 bg-opacity-75 lg:hidden"
+            className="fixed inset-0 z-30 bg-gray-600 bg-opacity-50 lg:hidden"
             onClick={() => setSidebarOpen(false)}
-          ></div>
+          />
         )}
-
         {/* Sidebar */}
         <aside
           className={`
-            fixed lg:static inset-y-0 left-0 z-30
-            w-64 bg-white border-r border-gray-200
+            fixed lg:static inset-y-0 left-0 z-40
+            w-64 bg-white dark:bg-dark-card border-r border-gray-200 dark:border-dark-border
             transform transition-transform duration-300 ease-in-out
             lg:translate-x-0
             ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
-            mt-16 lg:mt-0
+            mt-0
           `}
+          aria-label="Sidebar"
         >
           <nav className="px-4 py-6 space-y-1">
             {filteredNavigation.map((item) => (
@@ -90,7 +95,7 @@ const DashboardLayout = ({ children }) => {
                 className={`flex items-center px-4 py-3 text-sm font-medium rounded-md transition-colors ${
                   isActive(item.href)
                     ? "bg-primary text-white"
-                    : "text-gray-700 hover:bg-gray-100"
+                    : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
                 }`}
               >
                 <span className="mr-3">{item.icon}</span>
@@ -99,11 +104,11 @@ const DashboardLayout = ({ children }) => {
             ))}
           </nav>
         </aside>
-
         {/* Mobile menu button */}
         <button
           onClick={() => setSidebarOpen(!sidebarOpen)}
-          className="fixed bottom-4 right-4 z-40 lg:hidden p-3 bg-primary text-white rounded-full shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+          className="fixed bottom-4 right-4 z-50 lg:hidden p-3 bg-primary text-white rounded-full shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors"
+          aria-label="Toggle sidebar"
         >
           <svg
             className="w-6 h-6"
@@ -128,13 +133,13 @@ const DashboardLayout = ({ children }) => {
             )}
           </svg>
         </button>
-
         {/* Main Content */}
         <main className="flex-1 p-4 sm:p-6 lg:p-8 w-full lg:w-auto">
-          {children}
+          <div className="max-w-7xl mx-auto">{children}</div>
         </main>
       </div>
     </div>
   );
 };
+
 export default DashboardLayout;

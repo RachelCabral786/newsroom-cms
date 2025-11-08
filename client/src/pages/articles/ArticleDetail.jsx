@@ -4,18 +4,20 @@ import { toast } from "react-toastify";
 import DashboardLayout from "../../components/layout/DashboardLayout";
 import LoadingSpinner from "../../components/common/LoadingSpinner";
 import articleService from "../../services/articleService";
-import { useAuth } from "../../context/AuthContext";
+// import { useAuth } from "../../context/AuthContext";
+import { useTheme } from "../../context/ThemeContext";
 
 const ArticleDetail = () => {
+  const { theme } = useTheme();
   const { id } = useParams();
   const navigate = useNavigate();
-  const { user } = useAuth();
+  // const { user } = useAuth();
   const [article, setArticle] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchArticle();
-  }, [id]);
+  }, [id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const fetchArticle = async () => {
     try {
@@ -33,10 +35,22 @@ const ArticleDetail = () => {
 
   const getStatusBadge = (status) => {
     const badges = {
-      draft: "bg-gray-100 text-gray-800",
-      submitted: "bg-yellow-100 text-yellow-800",
-      approved: "bg-green-100 text-green-800",
-      rejected: "bg-red-100 text-red-800",
+      draft:
+        theme === "dark"
+          ? "bg-gray-800 text-gray-200"
+          : "bg-gray-100 text-gray-500",
+      submitted:
+        theme === "dark"
+          ? "bg-yellow-900 text-yellow-200"
+          : "bg-yellow-100 text-yellow-500",
+      approved:
+        theme === "dark"
+          ? "bg-green-900 text-green-200"
+          : "bg-green-100 text-green-500",
+      rejected:
+        theme === "dark"
+          ? "bg-red-900 text-red-200"
+          : "bg-red-100 text-red-500",
     };
     return badges[status] || badges.draft;
   };
@@ -55,7 +69,13 @@ const ArticleDetail = () => {
     return (
       <DashboardLayout>
         <div className="text-center py-12">
-          <h2 className="text-2xl font-bold text-gray-900">
+          <h2
+            className={
+              theme === "dark"
+                ? "text-2xl font-bold text-white"
+                : "text-2xl font-bold text-gray-900"
+            }
+          >
             Article not found
           </h2>
         </div>
@@ -66,11 +86,14 @@ const ArticleDetail = () => {
   return (
     <DashboardLayout>
       <div className="max-w-4xl mx-auto">
-        {/* Header */}
         <div className="mb-8">
           <button
             onClick={() => navigate(-1)}
-            className="flex items-center text-gray-600 hover:text-gray-900 mb-4"
+            className={
+              theme === "dark"
+                ? "flex items-center text-gray-400 hover:text-white mb-4"
+                : "flex items-center text-gray-600 hover:text-gray-900 mb-4"
+            }
           >
             <svg
               className="w-5 h-5 mr-2"
@@ -91,20 +114,33 @@ const ArticleDetail = () => {
           <div className="flex items-start justify-between">
             <div>
               <span
-                className={`inline-block px-3 py-1 text-xs font-semibold rounded-full ${getStatusBadge(
+                className={`inline-block px-3 py-1 text-xs font-semibold rounded-full mb-3 ${getStatusBadge(
                   article.status
-                )} mb-3`}
+                )}`}
               >
                 {article.status.toUpperCase()}
               </span>
-              <h1 className="text-4xl font-bold text-gray-900 mb-4">
+              <h1
+                className={
+                  theme === "dark"
+                    ? "text-4xl font-bold text-white mb-4"
+                    : "text-4xl font-bold text-gray-900 mb-4"
+                }
+              >
                 {article.title}
               </h1>
             </div>
           </div>
 
-          {/* Meta Information */}
-          <div className="flex flex-wrap items-center gap-6 text-sm text-gray-600 pb-6 border-b border-gray-200">
+          <div
+            className={
+              theme === "dark"
+                ? "flex flex-wrap items-center gap-6 text-sm text-gray-400 pb-6 border-b border-dark-border"
+                : "flex flex-wrap items-center gap-6 text-sm text-gray-600 pb-6 border-b border-gray-200"
+            }
+          >
+            {/* Author, Created, Submitted, Editor, Approved By */}
+            {/* keep same structure; only text colors updated */}
             <div className="flex items-center">
               <svg
                 className="w-5 h-5 mr-2"
@@ -214,10 +250,21 @@ const ArticleDetail = () => {
           </div>
         </div>
 
-        {/* Rejection Comment */}
         {article.status === "rejected" && article.rejectionComment && (
-          <div className="mb-8 p-6 bg-red-50 border border-red-200 rounded-lg">
-            <h3 className="text-lg font-semibold text-red-800 mb-2 flex items-center">
+          <div
+            className={
+              theme === "dark"
+                ? "mb-8 p-6 bg-red-900 bg-opacity-20 border border-red-500 rounded-lg"
+                : "mb-8 p-6 bg-red-50 border border-red-200 rounded-lg"
+            }
+          >
+            <h3
+              className={
+                theme === "dark"
+                  ? "text-lg font-semibold text-red-300 mb-2 flex items-center"
+                  : "text-lg font-semibold text-red-500 mb-2 flex items-center"
+              }
+            >
               <svg
                 className="w-5 h-5 mr-2"
                 fill="none"
@@ -233,12 +280,17 @@ const ArticleDetail = () => {
               </svg>
               Rejection Reason
             </h3>
-            <p className="text-red-700">{article.rejectionComment}</p>
+            <p className={theme === "dark" ? "text-red-300" : "text-red-700"}>
+              {article.rejectionComment}
+            </p>
           </div>
         )}
 
-        {/* Article Content */}
-        <div className="bg-white rounded-lg shadow-lg p-8 mb-8">
+        <div
+          className={`rounded-lg shadow-lg p-8 mb-8 ${
+            theme === "dark" ? "bg-dark-card" : "bg-white"
+          }`}
+        >
           <div
             className="prose prose-lg max-w-none"
             dangerouslySetInnerHTML={{ __html: article.content }}

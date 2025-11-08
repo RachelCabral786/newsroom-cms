@@ -15,6 +15,7 @@ const EditArticle = () => {
 
   useEffect(() => {
     fetchArticle();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   const fetchArticle = async () => {
@@ -33,6 +34,7 @@ const EditArticle = () => {
       setArticle(articleData);
     } catch (error) {
       toast.error("Failed to load article");
+      console.log(error);
       navigate("/dashboard");
     } finally {
       setLoading(false);
@@ -92,24 +94,28 @@ const EditArticle = () => {
     <DashboardLayout>
       <div className="max-w-4xl mx-auto">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Edit Article</h1>
-          <p className="mt-2 text-gray-600">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+            Edit Article
+          </h1>
+          <p className="mt-2 text-gray-600 dark:text-gray-400">
             {article?.status === "rejected"
               ? "This article was rejected. Make necessary changes and resubmit for review."
               : "Update your article and save changes or submit it for review."}
           </p>
 
           {article?.status === "rejected" && article?.rejectionComment && (
-            <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-md">
-              <h3 className="text-sm font-semibold text-red-800 mb-1">
+            <div className="mt-4 p-4 bg-red-50 dark:bg-red-900 dark:bg-opacity-20 border border-red-200 dark:border-red-500 rounded-md">
+              <h3 className="text-sm font-semibold text-red-500 dark:text-red-300 mb-1">
                 Rejection Reason:
               </h3>
-              <p className="text-sm text-red-700">{article.rejectionComment}</p>
+              <p className="text-sm text-red-700 dark:text-red-300">
+                {article.rejectionComment}
+              </p>
             </div>
           )}
         </div>
 
-        <div className="bg-white rounded-lg shadow-lg p-6">
+        <div className="bg-white dark:bg-dark-card rounded-lg shadow-lg p-6 border border-gray-200 dark:border-dark-border">
           <ArticleForm
             initialData={article}
             onSubmit={handleSubmit}

@@ -1,12 +1,9 @@
-// src/context/SocketProvider.jsx (or original filename)
 import { useEffect, useState } from "react";
 import { io } from "socket.io-client";
 import { useAuth } from "./AuthContext";
 import { toast } from "react-toastify";
-// Import the context from the new file
 import { SocketContext } from "./useSocket";
 
-// Only SocketProvider is exported here
 export const SocketProvider = ({ children }) => {
   const [socket, setSocket] = useState(null);
   const [connected, setConnected] = useState(false);
@@ -55,9 +52,8 @@ export const SocketProvider = ({ children }) => {
   }, [user]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
-    // ... (rest of your useEffect logic remains here)
     if (!socket || !user) return;
-    // ... (logic for handleArticleApproved and handleArticleRejected)
+    
     const handleArticleApproved = (data) => {
       console.log("📢 Article approved:", data);
       toast.success(

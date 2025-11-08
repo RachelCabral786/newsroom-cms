@@ -18,39 +18,22 @@ const ArticleForm = ({ initialData, onSubmit, onCancel, loading }) => {
   const modules = {
     toolbar: [
       [{ header: [1, 2, 3, 4, 5, 6, false] }],
-      [{ font: [] }],
-      [{ size: ["small", false, "large", "huge"] }],
       ["bold", "italic", "underline", "strike"],
-      [{ color: [] }, { background: [] }],
       [{ script: "sub" }, { script: "super" }],
       [{ list: "ordered" }, { list: "bullet" }],
-      [{ indent: "-1" }, { indent: "+1" }],
-      [{ align: [] }],
-      ["blockquote", "code-block"],
-      ["link", "image", "video"],
-      ["clean"],
+      ["blockquote"],
     ],
   };
 
   const formats = [
     "header",
-    "font",
-    "size",
     "bold",
     "italic",
     "underline",
     "strike",
-    "color",
-    "background",
     "script",
     "list",
-    "indent",
-    "align",
     "blockquote",
-    "code-block",
-    "link",
-    "image",
-    "video",
   ];
 
   const { quill, quillRef } = useQuill({ modules, formats });
@@ -81,7 +64,7 @@ const ArticleForm = ({ initialData, onSubmit, onCancel, loading }) => {
     return () => {
       quill.off("text-change", handleTextChange);
     };
-  }, [quill]);
+  }, [quill]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (!quill) return;
@@ -174,7 +157,7 @@ const ArticleForm = ({ initialData, onSubmit, onCancel, loading }) => {
       <div>
         <label
           htmlFor="title"
-          className="block text-sm font-medium text-gray-700 mb-2"
+          className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
         >
           Article Title <span className="text-red-500">*</span>
         </label>
@@ -185,20 +168,20 @@ const ArticleForm = ({ initialData, onSubmit, onCancel, loading }) => {
           onChange={(e) => handleInputChange("title", e.target.value)}
           className={`w-full px-4 py-2 border ${
             errors.title ? "border-red-500" : "border-gray-300"
-          } rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent`}
+          } rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent dark:bg-dark-bg dark:border-dark-border dark:text-white`}
           placeholder="Enter article title..."
         />
         {errors.title && (
           <p className="mt-1 text-sm text-red-600">{errors.title}</p>
         )}
-        <p className="mt-1 text-sm text-gray-500">
+        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
           {formData.title.length}/200 characters
         </p>
       </div>
 
       {/* Content */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
           Article Content <span className="text-red-500">*</span>
         </label>
         <div
@@ -207,12 +190,16 @@ const ArticleForm = ({ initialData, onSubmit, onCancel, loading }) => {
           }`}
         >
           {/* react-quilljs editor mount point */}
-          <div ref={quillRef} className="bg-white" style={{ minHeight: 400 }} />
+          <div
+            ref={quillRef}
+            className="bg-white dark:bg-dark-card dark:text-white"
+            style={{ minHeight: 400 }}
+          />
         </div>
         {errors.content && (
           <p className="mt-1 text-sm text-red-600">{errors.content}</p>
         )}
-        <p className="mt-1 text-sm text-gray-500">
+        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
           Minimum 50 characters required
         </p>
       </div>
@@ -222,7 +209,7 @@ const ArticleForm = ({ initialData, onSubmit, onCancel, loading }) => {
         <div>
           <label
             htmlFor="editor"
-            className="block text-sm font-medium text-gray-700 mb-2"
+            className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
           >
             Assign to Editor (Optional - required for submission)
           </label>
@@ -231,7 +218,7 @@ const ArticleForm = ({ initialData, onSubmit, onCancel, loading }) => {
             value={formData.editorId}
             onChange={(e) => handleInputChange("editorId", e.target.value)}
             disabled={loadingEditors}
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent dark:bg-dark-card dark:border-dark-border dark:text-white"
           >
             <option value="">Select an editor (optional)</option>
             {editors.map((editor) => (
@@ -240,7 +227,7 @@ const ArticleForm = ({ initialData, onSubmit, onCancel, loading }) => {
               </option>
             ))}
           </select>
-          <p className="mt-1 text-sm text-gray-500">
+          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
             You can save as draft without selecting an editor, or select one to
             submit for review
           </p>
@@ -248,13 +235,13 @@ const ArticleForm = ({ initialData, onSubmit, onCancel, loading }) => {
       )}
 
       {/* Action Buttons */}
-      <div className="flex justify-end space-x-3 pt-6 border-t border-gray-200">
+      <div className="flex justify-end space-x-3 pt-6 border-t border-gray-200 dark:border-dark-border">
         {onCancel && (
           <button
             type="button"
             onClick={onCancel}
             disabled={loading}
-            className="px-6 py-2 border border-gray-300 text-gray-700 font-medium rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 disabled:opacity-50"
+            className="px-6 py-2 border border-gray-300 text-gray-700 font-medium rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 disabled:opacity-50 dark:border-dark-border dark:text-gray-300 dark:hover:bg-opacity-5"
           >
             Cancel
           </button>

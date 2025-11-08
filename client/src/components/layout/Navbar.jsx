@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { useSocket } from "../../context/useSocket";
+import ThemeToggle from "../common/ThemeToggle";
 
 const Navbar = () => {
   const { user, logout } = useAuth();
@@ -16,22 +17,26 @@ const Navbar = () => {
 
   const getRoleBadgeColor = (role) => {
     const colors = {
-      admin: "bg-purple-100 text-purple-800",
-      editor: "bg-blue-100 text-blue-800",
-      writer: "bg-green-100 text-green-800",
-      reader: "bg-gray-100 text-gray-800",
+      admin:
+        "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200",
+      editor: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
+      writer:
+        "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
+      reader: "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200",
     };
     return colors[role] || colors.reader;
   };
 
   return (
-    <nav className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
+    <nav className="bg-white dark:bg-dark-card shadow-sm border-b border-gray-200 dark:border-dark-border sticky top-0 z-50 transition-colors duration-200">
       <div className="mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Left: Logo + Desktop Connection Indicator */}
           <div className="flex items-center">
             <Link to="/dashboard" className="flex items-center">
-              <h1 className="text-xl font-bold text-primary">Newsroom CMS</h1>
+              <h1 className="text-xl font-bold text-primary dark:text-white">
+                Newsroom CMS
+              </h1>
             </Link>
 
             {/* DESKTOP/TABLET connection indicator (left) */}
@@ -44,7 +49,7 @@ const Navbar = () => {
                   aria-hidden="true"
                   title={connected ? "Connected" : "Disconnected"}
                 />
-                <span className="ml-2 text-xs text-gray-500">
+                <span className="ml-2 text-xs text-gray-500 dark:text-gray-400">
                   {connected ? "Connected" : "Disconnected"}
                 </span>
               </div>
@@ -53,13 +58,17 @@ const Navbar = () => {
 
           {/* Right: Desktop actions */}
           <div className="hidden md:flex md:items-center md:space-x-4">
+            <ThemeToggle />
+
             {user && (
               <div className="flex items-center space-x-3">
                 <div className="text-right">
-                  <p className="text-sm font-medium text-gray-900">
+                  <p className="text-sm font-medium text-gray-900 dark:text-white">
                     {user.name}
                   </p>
-                  <p className="text-xs text-gray-500">{user.email}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                    {user.email}
+                  </p>
                 </div>
 
                 <span
@@ -80,7 +89,10 @@ const Navbar = () => {
             )}
             {!user && (
               <div className="flex items-center space-x-3">
-                <Link to="/login" className="text-sm font-medium text-gray-700">
+                <Link
+                  to="/login"
+                  className="text-sm font-medium text-gray-700 dark:text-gray-200"
+                >
                   Login
                 </Link>
                 <Link
@@ -107,6 +119,11 @@ const Navbar = () => {
                 />
               </div>
             )}
+
+            {/* theme toggle on mobile (next to hamburger) */}
+            <div className="mr-2">
+              <ThemeToggle />
+            </div>
 
             <button
               onClick={() => setMobileOpen((s) => !s)}
@@ -160,15 +177,17 @@ const Navbar = () => {
           mobileOpen ? "max-h-[400px]" : "max-h-0"
         }`}
       >
-        <div className="px-4 pt-4 pb-4 space-y-3 border-t border-gray-100">
+        <div className="px-4 pt-4 pb-4 space-y-3 border-t border-gray-100 dark:border-dark-border">
           {user ? (
             <>
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-900">
+                  <p className="text-sm font-medium text-gray-900 dark:text-white">
                     {user.name}
                   </p>
-                  <p className="text-xs text-gray-500">{user.email}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                    {user.email}
+                  </p>
                 </div>
                 <span
                   className={`px-2 py-1 text-xs font-semibold rounded-full ${getRoleBadgeColor(
@@ -192,7 +211,7 @@ const Navbar = () => {
             <div className="space-y-2">
               <Link
                 to="/login"
-                className="block w-full text-center px-3 py-2 rounded-md text-sm font-medium text-gray-700 bg-gray-100"
+                className="block w-full text-center px-3 py-2 rounded-md text-sm font-medium text-gray-700 bg-gray-100 dark:bg-gray-800 dark:text-gray-200"
               >
                 Login
               </Link>
