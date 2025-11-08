@@ -199,7 +199,7 @@ Writers receive instant notifications when their articles are-
 - Input validation and sanitization
 
 ## 📄 License
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License, see the license file for details.
 
 
 ⭐ Star this repository if you find it helpful!

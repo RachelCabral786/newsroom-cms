@@ -1,5 +1,7 @@
+
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { Eye, EyeOff } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import ThemeToggle from "../../components/common/ThemeToggle";
 
@@ -16,6 +18,8 @@ const Register = () => {
   });
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleChange = (e) => {
     setFormData({
@@ -164,21 +168,30 @@ const Register = () => {
               >
                 Password
               </label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                autoComplete="new-password"
-                required
-                value={formData.password}
-                onChange={handleChange}
-                className={`mt-1 appearance-none relative block w-full px-3 py-2 border ${
-                  errors.password
-                    ? "border-red-500 dark:border-red-400"
-                    : "border-gray-300 dark:border-dark-border"
-                } placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white bg-white dark:bg-dark-bg rounded-md focus:outline-none focus:ring-primary focus:border-primary sm:text-sm transition-colors duration-200`}
-                placeholder="Enter your password"
-              />
+              <div className="relative mt-1">
+                <input
+                  id="password"
+                  name="password"
+                  type={showPassword ? "text" : "password"}
+                  autoComplete="new-password"
+                  required
+                  value={formData.password}
+                  onChange={handleChange}
+                  className={`appearance-none relative block w-full px-3 py-2 pr-10 border ${
+                    errors.password
+                      ? "border-red-500 dark:border-red-400"
+                      : "border-gray-300 dark:border-dark-border"
+                  } placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white bg-white dark:bg-dark-bg rounded-md focus:outline-none focus:ring-primary focus:border-primary sm:text-sm transition-colors duration-200`}
+                  placeholder="Enter your password"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+                >
+                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                </button>
+              </div>
               {errors.password && (
                 <p className="mt-1 text-sm text-red-600 dark:text-red-400">
                   {errors.password}
@@ -193,21 +206,30 @@ const Register = () => {
               >
                 Confirm Password
               </label>
-              <input
-                id="confirmPassword"
-                name="confirmPassword"
-                type="password"
-                autoComplete="new-password"
-                required
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                className={`mt-1 appearance-none relative block w-full px-3 py-2 border ${
-                  errors.confirmPassword
-                    ? "border-red-500 dark:border-red-400"
-                    : "border-gray-300 dark:border-dark-border"
-                } placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white bg-white dark:bg-dark-bg rounded-md focus:outline-none focus:ring-primary focus:border-primary sm:text-sm transition-colors duration-200`}
-                placeholder="Confirm your password"
-              />
+              <div className="relative mt-1">
+                <input
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  type={showConfirmPassword ? "text" : "password"}
+                  autoComplete="new-password"
+                  required
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  className={`appearance-none relative block w-full px-3 py-2 pr-10 border ${
+                    errors.confirmPassword
+                      ? "border-red-500 dark:border-red-400"
+                      : "border-gray-300 dark:border-dark-border"
+                  } placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white bg-white dark:bg-dark-bg rounded-md focus:outline-none focus:ring-primary focus:border-primary sm:text-sm transition-colors duration-200`}
+                  placeholder="Confirm your password"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+                >
+                  {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                </button>
+              </div>
               {errors.confirmPassword && (
                 <p className="mt-1 text-sm text-red-600 dark:text-red-400">
                   {errors.confirmPassword}
@@ -290,6 +312,5 @@ const Register = () => {
       </div>
     </div>
   );
-};
-
+};  
 export default Register;
